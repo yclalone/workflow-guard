@@ -27,7 +27,7 @@ class Severity(IntEnum):
         return self.name.lower()
 
 
-@dataclass(frozen=True, slots=True)
+@dataclass(frozen=True)
 class Finding:
     """One actionable issue found in a workflow."""
 
@@ -44,7 +44,7 @@ class Finding:
         return data
 
 
-@dataclass(frozen=True, slots=True)
+@dataclass(frozen=True)
 class ScanResult:
     """Findings and scan metadata for one invocation."""
 
@@ -76,4 +76,3 @@ def display_path(path: Path, root: Path | None = None) -> str:
         except ValueError:
             pass
     return path.as_posix()
-

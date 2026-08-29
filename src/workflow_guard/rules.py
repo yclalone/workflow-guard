@@ -22,7 +22,7 @@ _REMOTE_SCRIPT_RE = re.compile(
 )
 
 
-@dataclass(frozen=True, slots=True)
+@dataclass(frozen=True)
 class _Job:
     name: str
     line: int
@@ -222,4 +222,3 @@ def evaluate(lines: list[str], path: str) -> list[Finding]:
             )
 
     return findings
-
