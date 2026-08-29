@@ -1,0 +1,38 @@
+[build-system]
+requires = ["setuptools>=69"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "workflow-guard"
+version = "0.1.0"
+description = "A dependency-free security and maintainability linter for GitHub Actions workflows."
+readme = "README.md"
+requires-python = ">=3.9"
+license = { file = "LICENSE" }
+authors = [
+  { name = "yclalone" }
+]
+keywords = ["github-actions", "security", "supply-chain", "linter", "devsecops"]
+classifiers = [
+  "Development Status :: 3 - Alpha",
+  "Environment :: Console",
+  "License :: OSI Approved :: MIT License",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3 :: Only",
+  "Topic :: Software Development :: Quality Assurance",
+  "Topic :: Security",
+]
+
+[project.scripts]
+workflow-guard = "workflow_guard.cli:main"
+
+[project.urls]
+Homepage = "https://github.com/yclalone/workflow-guard"
+Issues = "https://github.com/yclalone/workflow-guard/issues"
+
+[tool.setuptools]
+package-dir = { "" = "src" }
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
