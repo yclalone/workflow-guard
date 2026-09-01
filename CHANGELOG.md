@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+### Added
+
+- SARIF 2.1.0 output for GitHub code scanning integrations.
+
 ## [0.1.0] - 2026-08-29
 
 ### Added
@@ -15,4 +19,3 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - Text, Markdown, and JSON report formats.
 - Configurable CI failure threshold.
 - Unit tests and a self-scanning GitHub Actions workflow.
-

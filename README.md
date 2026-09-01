@@ -50,6 +50,14 @@ Use JSON in automation and fail on medium-or-higher findings:
 workflow-guard . --format json --fail-on medium
 ```
 
+Generate a SARIF report for GitHub code scanning:
+
+```bash
+workflow-guard . --format sarif --output workflow-guard.sarif --fail-on none
+```
+
+The SARIF report includes rule IDs, severity levels, file paths, line numbers, and remediation guidance. Upload it with GitHub's `github/codeql-action/upload-sarif` action to show findings in the repository Security tab. Keep `--fail-on none` when a later workflow step must upload the report, and enforce a separate severity threshold after the upload step if desired.
+
 Exit codes:
 
 - `0`: scan completed and no finding reached the configured threshold
@@ -75,4 +83,3 @@ Bug reports, new test fixtures, and narrowly scoped rules are welcome. See [`CON
 ## License
 
 MIT — see [`LICENSE`](LICENSE).
-
