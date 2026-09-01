@@ -6,7 +6,7 @@ import unittest
 from pathlib import Path
 
 from workflow_guard.cli import main
-from workflow_guard.report import render_json
+from workflow_guard.report import render_json, render_sarif
 from workflow_guard.scanner import scan_path, scan_text
 
 
@@ -76,6 +76,35 @@ class ScannerTests(unittest.TestCase):
         self.assertEqual(payload["files_scanned"], 1)
         self.assertEqual(payload["summary"]["critical"], 1)
 
+    def test_sarif_report_contains_github_code_scanning_fields(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            workflow = Path(temp) / "risky.yaml"
+            workflow.write_text(INSECURE_WORKFLOW, encoding="utf-8")
+            result = scan_path(workflow)
+        payload = json.loads(render_sarif(result))
+        self.assertEqual(payload["version"], "2.1.0")
+        run = payload["runs"][0]
+        self.assertEqual(run["tool"]["driver"]["name"], "workflow-guard")
+        self.assertEqual(len(run["results"]), 5)
+        critical = next(item for item in run["results"] if item["ruleId"] == "WG006")
+        self.assertEqual(critical["level"], "error")
+        location = critical["locations"][0]["physicalLocation"]
+        self.assertEqual(location["artifactLocation"]["uri"], "risky.yaml")
+        self.assertEqual(location["region"]["startLine"], 9)
+
+    def test_cli_writes_sarif_file(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            workflow = root / "risky.yml"
+            output = root / "results.sarif"
+            workflow.write_text(INSECURE_WORKFLOW, encoding="utf-8")
+            exit_code = main(
+                [str(workflow), "--format", "sarif", "--output", str(output), "--fail-on", "none"]
+            )
+            payload = json.loads(output.read_text(encoding="utf-8"))
+        self.assertEqual(exit_code, 0)
+        self.assertEqual(payload["runs"][0]["results"][0]["ruleId"], "WG002")
+
     def test_cli_threshold(self) -> None:
         with tempfile.TemporaryDirectory() as temp:
             workflow = Path(temp) / "secure.yml"
@@ -85,4 +114,3 @@ class ScannerTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
-
