@@ -32,6 +32,18 @@ python -m pip install -e .
 
 ## Usage
 
+Run it directly in a GitHub Actions workflow without a separate install step:
+
+```yaml
+- name: Scan GitHub Actions workflows
+  uses: yclalone/workflow-guard@main
+  with:
+    path: .
+    fail-on: medium
+```
+
+For reproducible builds, replace `main` with a full commit SHA. The action sets up Python, installs `workflow-guard`, and scans the requested path. Optional inputs are `format` (`text`, `json`, `markdown`, or `sarif`) and `output` (a report file path).
+
 Scan a repository root:
 
 ```bash
