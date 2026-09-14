@@ -18,7 +18,7 @@ class ActionMetadataTests(unittest.TestCase):
     def test_action_exposes_safe_defaults(self) -> None:
         metadata = (ROOT / "action.yml").read_text(encoding="utf-8")
         self.assertIn("default: high", metadata)
-        self.assertIn("default: text", metadata)
+        self.assertIn("default: github", metadata)
         self.assertIn("WORKFLOW_GUARD_PATH: ${{ inputs.path }}", metadata)
 
 

@@ -6,7 +6,8 @@ import unittest
 from pathlib import Path
 
 from workflow_guard.cli import main
-from workflow_guard.report import render_json, render_sarif
+from workflow_guard.models import Finding, ScanResult, Severity
+from workflow_guard.report import render_github, render_json, render_sarif
 from workflow_guard.scanner import scan_path, scan_text
 
 
@@ -91,6 +92,32 @@ class ScannerTests(unittest.TestCase):
         location = critical["locations"][0]["physicalLocation"]
         self.assertEqual(location["artifactLocation"]["uri"], "risky.yaml")
         self.assertEqual(location["region"]["startLine"], 9)
+
+    def test_github_report_emits_annotations_and_escapes_values(self) -> None:
+        result = ScanResult(
+            ".",
+            1,
+            (
+                Finding(
+                    "WG999",
+                    Severity.MEDIUM,
+                    "Message 100%\nnext",
+                    ".github/workflows/a,b.yml",
+                    2,
+                    "Review: now",
+                ),
+            ),
+        )
+        report = render_github(result)
+        self.assertEqual(
+            report,
+            "::warning file=.github/workflows/a%2Cb.yml,line=2,title=WG999 (medium)::"
+            "Message 100%25%0Anext Fix: Review: now\n",
+        )
+
+    def test_github_report_keeps_clean_runs_annotation_free(self) -> None:
+        report = render_github(ScanResult(".", 2, ()))
+        self.assertEqual(report, "workflow-guard: no findings in 2 workflow file(s)\n")
 
     def test_cli_writes_sarif_file(self) -> None:
         with tempfile.TemporaryDirectory() as temp:
