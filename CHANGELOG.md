@@ -8,6 +8,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Added
 
+- GitHub Actions workflow-command output for inline PR and run annotations.
 - A self-contained composite GitHub Action for running workflow scans without a separate install step.
 - SARIF 2.1.0 output for GitHub code scanning integrations.
 

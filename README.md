@@ -42,7 +42,7 @@ Run it directly in a GitHub Actions workflow without a separate install step:
     fail-on: medium
 ```
 
-For reproducible builds, replace `main` with a full commit SHA. The action sets up Python, installs `workflow-guard`, and scans the requested path. Optional inputs are `format` (`text`, `json`, `markdown`, or `sarif`) and `output` (a report file path).
+For reproducible builds, replace `main` with a full commit SHA. The action sets up Python, installs `workflow-guard`, and scans the requested path. Its default `github` report format creates inline notice, warning, and error annotations in the workflow run. Other formats are `text`, `json`, `markdown`, and `sarif`; use the optional `output` input to write a report file.
 
 Scan a repository root:
 
@@ -60,6 +60,12 @@ Use JSON in automation and fail on medium-or-higher findings:
 
 ```bash
 workflow-guard . --format json --fail-on medium
+```
+
+Create inline annotations in a GitHub Actions run:
+
+```bash
+workflow-guard . --format github --fail-on medium
 ```
 
 Generate a SARIF report for GitHub code scanning:

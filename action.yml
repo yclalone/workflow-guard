@@ -8,9 +8,9 @@ inputs:
     required: false
     default: .
   format:
-    description: Report format (text, json, markdown, or sarif).
+    description: Report format (github, text, json, markdown, or sarif).
     required: false
-    default: text
+    default: github
   output:
     description: Optional path to write the report. Leave empty to print to the log.
     required: false
