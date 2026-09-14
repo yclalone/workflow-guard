@@ -15,6 +15,21 @@ _SARIF_LEVELS = {
     Severity.CRITICAL: "error",
 }
 
+_GITHUB_LEVELS = {
+    Severity.LOW: "notice",
+    Severity.MEDIUM: "warning",
+    Severity.HIGH: "error",
+    Severity.CRITICAL: "error",
+}
+
+
+def _escape_github_data(value: str) -> str:
+    return value.replace("%", "%25").replace("\r", "%0D").replace("\n", "%0A")
+
+
+def _escape_github_property(value: str) -> str:
+    return _escape_github_data(value).replace(":", "%3A").replace(",", "%2C")
+
 
 def render_text(result: ScanResult) -> str:
     lines = [
@@ -69,6 +84,24 @@ def render_markdown(result: ScanResult) -> str:
 
 def render_json(result: ScanResult) -> str:
     return json.dumps(result.to_dict(), indent=2, ensure_ascii=False) + "\n"
+
+
+def render_github(result: ScanResult) -> str:
+    """Render findings as GitHub Actions workflow command annotations."""
+
+    if not result.findings:
+        return f"workflow-guard: no findings in {result.files_scanned} workflow file(s)\n"
+    lines = []
+    for item in result.findings:
+        command = _GITHUB_LEVELS[item.severity]
+        properties = (
+            f"file={_escape_github_property(item.path)},"
+            f"line={max(1, item.line)},"
+            f"title={_escape_github_property(f'{item.rule_id} ({item.severity})')}"
+        )
+        message = _escape_github_data(f"{item.message} Fix: {item.recommendation}")
+        lines.append(f"::{command} {properties}::{message}")
+    return "\n".join(lines) + "\n"
 
 
 def render_sarif(result: ScanResult) -> str:
@@ -140,6 +173,8 @@ def render(result: ScanResult, output_format: str) -> str:
         return render_markdown(result)
     if output_format == "json":
         return render_json(result)
+    if output_format == "github":
+        return render_github(result)
     if output_format == "sarif":
         return render_sarif(result)
     raise ValueError(f"unsupported output format: {output_format}")

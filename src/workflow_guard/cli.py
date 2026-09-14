@@ -18,7 +18,11 @@ def _parser() -> argparse.ArgumentParser:
         description="Scan GitHub Actions workflows for security and maintainability risks.",
     )
     parser.add_argument("target", nargs="?", default=".", help="workflow file, directory, or repository root")
-    parser.add_argument("--format", choices=("text", "json", "markdown", "sarif"), default="text")
+    parser.add_argument(
+        "--format",
+        choices=("text", "json", "markdown", "github", "sarif"),
+        default="text",
+    )
     parser.add_argument("--output", type=Path, help="write the report to this file instead of stdout")
     parser.add_argument(
         "--fail-on",
