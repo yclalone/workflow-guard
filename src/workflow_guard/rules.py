@@ -21,6 +21,8 @@ _REMOTE_SCRIPT_RE = re.compile(
     re.IGNORECASE,
 )
 
+RULE_IDS = ("WG001", "WG002", "WG003", "WG004", "WG005", "WG006", "WG007")
+
 
 @dataclass(frozen=True)
 class _Job:
