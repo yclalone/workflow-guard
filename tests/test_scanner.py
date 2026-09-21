@@ -138,6 +138,41 @@ class ScannerTests(unittest.TestCase):
             workflow.write_text(SECURE_WORKFLOW, encoding="utf-8")
             self.assertEqual(main([str(workflow), "--fail-on", "high"]), 0)
 
+    def test_cli_can_ignore_a_rule(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            workflow = root / "risky.yml"
+            output = root / "results.json"
+            workflow.write_text(INSECURE_WORKFLOW, encoding="utf-8")
+            exit_code = main(
+                [
+                    str(workflow),
+                    "--format",
+                    "json",
+                    "--output",
+                    str(output),
+                    "--fail-on",
+                    "high",
+                    "--ignore-rule",
+                    "wg002",
+                    "--ignore-rule",
+                    "WG006",
+                    "--ignore-rule",
+                    "WG007",
+                ]
+            )
+            payload = json.loads(output.read_text(encoding="utf-8"))
+        self.assertEqual(exit_code, 0)
+        self.assertEqual(
+            {item["rule_id"] for item in payload["findings"]},
+            {"WG004", "WG005"},
+        )
+
+    def test_cli_rejects_unknown_ignored_rule(self) -> None:
+        with self.assertRaises(SystemExit) as context:
+            main([".", "--ignore-rule", "WG999"])
+        self.assertEqual(context.exception.code, 2)
+
 
 if __name__ == "__main__":
     unittest.main()

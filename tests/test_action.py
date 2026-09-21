@@ -20,6 +20,8 @@ class ActionMetadataTests(unittest.TestCase):
         self.assertIn("default: high", metadata)
         self.assertIn("default: github", metadata)
         self.assertIn("WORKFLOW_GUARD_PATH: ${{ inputs.path }}", metadata)
+        self.assertIn("WORKFLOW_GUARD_IGNORE_RULES: ${{ inputs.ignore-rules }}", metadata)
+        self.assertIn('args+=(--ignore-rule "$rule")', metadata)
 
 
 if __name__ == "__main__":
