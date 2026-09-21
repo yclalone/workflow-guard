@@ -19,6 +19,10 @@ inputs:
     description: Minimum severity that makes the action fail (none, low, medium, high, or critical).
     required: false
     default: high
+  ignore-rules:
+    description: Optional comma-separated rule IDs to ignore (for example, WG001,WG005).
+    required: false
+    default: ""
 
 runs:
   using: composite
@@ -37,8 +41,16 @@ runs:
         WORKFLOW_GUARD_FORMAT: ${{ inputs.format }}
         WORKFLOW_GUARD_OUTPUT: ${{ inputs.output }}
         WORKFLOW_GUARD_FAIL_ON: ${{ inputs.fail-on }}
+        WORKFLOW_GUARD_IGNORE_RULES: ${{ inputs.ignore-rules }}
       run: |
         args=("$WORKFLOW_GUARD_PATH" --format "$WORKFLOW_GUARD_FORMAT" --fail-on "$WORKFLOW_GUARD_FAIL_ON")
+        IFS=',' read -ra ignore_rules <<< "$WORKFLOW_GUARD_IGNORE_RULES"
+        for rule in "${ignore_rules[@]}"; do
+          rule="${rule//[[:space:]]/}"
+          if [[ -n "$rule" ]]; then
+            args+=(--ignore-rule "$rule")
+          fi
+        done
         if [[ -n "$WORKFLOW_GUARD_OUTPUT" ]]; then
           args+=(--output "$WORKFLOW_GUARD_OUTPUT")
         fi

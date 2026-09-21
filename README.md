@@ -62,6 +62,22 @@ Use JSON in automation and fail on medium-or-higher findings:
 workflow-guard . --format json --fail-on medium
 ```
 
+Ignore a rule only after documenting why it does not apply. Repeat the option for multiple rules:
+
+```bash
+workflow-guard . --ignore-rule WG001 --ignore-rule WG005
+```
+
+The GitHub Action accepts the same suppression as a comma-separated input:
+
+```yaml
+- uses: yclalone/workflow-guard@main
+  with:
+    ignore-rules: WG001,WG005
+```
+
+Unknown rule IDs are rejected so a typo cannot silently disable a check.
+
 Create inline annotations in a GitHub Actions run:
 
 ```bash
@@ -92,7 +108,7 @@ workflow-guard examples/risky-workflow.yml --fail-on none
 
 ## Design limits
 
-`workflow-guard` uses a targeted, line-oriented parser so it can run without third-party packages. It understands conventional GitHub Actions structure, but it is not a general YAML parser. Unusual anchors, generated YAML, or nonstandard indentation can require manual review. Findings are prompts for review, not proof that a workflow is exploitable.
+`workflow-guard` uses a targeted, line-oriented parser so it can run without third-party packages. It understands conventional GitHub Actions structure, but it is not a general YAML parser. Unusual anchors, generated YAML, or nonstandard indentation can require manual review. Findings are prompts for review, not proof that a workflow is exploitable. Ignoring a rule applies to the entire scan; per-file and per-line suppressions are not yet supported.
 
 ## Contributing
 
