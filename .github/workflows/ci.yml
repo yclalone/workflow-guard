@@ -40,7 +40,12 @@ jobs:
           path: examples/risky-workflow.yml
           format: sarif
           output: ${{ runner.temp }}/workflow-guard.sarif
-          fail-on: none
+          fail-on: high
+          ignore-rules: WG002,WG006,WG007
       - name: Validate SARIF output
         shell: bash
-        run: python -m json.tool "${{ runner.temp }}/workflow-guard.sarif" > /dev/null
+        run: |
+          python -m json.tool "${{ runner.temp }}/workflow-guard.sarif" > /dev/null
+          python -c 'import json, os; p=json.load(open(os.environ["REPORT"])); assert {r["ruleId"] for r in p["runs"][0]["results"]} == {"WG004", "WG005"}'
+        env:
+          REPORT: ${{ runner.temp }}/workflow-guard.sarif
